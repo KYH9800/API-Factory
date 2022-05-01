@@ -1,0 +1,42 @@
+{
+  "user": [
+    {
+      "id": 1,
+      "email": "sksgur01@gmail.com",
+      "password": "1234567",
+      "name": "고윤혁",
+      "nickname": "kyh_01",
+      "post": [],
+      "follower": [],
+      "following": []
+    }
+  ],
+
+  "post": [
+    {
+      "id": 1,
+      "image": "",
+      "content": "",
+      "comment": [
+        {
+          "user": []
+        }
+      ]
+    }
+  ],
+
+  "comment": [
+    {
+      "id": 1,
+      "content": [],
+      "moment": "2022.05.01"
+    }
+  ],
+
+  "image": [
+    {
+      "id": 1,
+      "src": "../"
+    }
+  ]
+}
