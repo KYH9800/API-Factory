@@ -1,8 +1,11 @@
 const express = require('express');
 const app = express();
 
+const cors = require('cors');
+const morgan = require('morgan');
+const bodyParser = require('body-parser');
+// models
 const db = require('./models');
-
 // router
 const userRouter = require('./routes/westargram/user');
 
@@ -18,9 +21,19 @@ db.sequelize.sync({
   alter: true,
 }); // sequelize model sync() 수정하기
 
+app.use(morgan('dev')); // 프론트에서 백엔드로 어떤 요청을 보냈는가 확인
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  })
+);
+
 app.get('/', (req, res) => {
   res.send('Wellcome, API Factory');
 });
+
+app.use(bodyParser.json());
 
 app.use('/user', userRouter);
 

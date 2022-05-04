@@ -1,7 +1,7 @@
-const express = require('express');
 const bcrypt = require('bcrypt');
+const router = require('express').Router();
 
-const router = express.Router();
+const { User } = require('../../models');
 
 // GET /user
 router.get('/', (req, res) => {
@@ -15,6 +15,7 @@ router.post('/login', (req, res) => {
 
 // POST /user, 회원가입
 router.post('/', async (req, res, next) => {
+  console.log('req.body.email', req.body.email);
   try {
     const alreadyUserId = await User.findOne({
       where: {
