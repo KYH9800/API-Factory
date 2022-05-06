@@ -1,9 +1,15 @@
 const express = require('express');
 const app = express();
+require('dotenv').config; // dotenv
 
 const cors = require('cors');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
+// 로그인
+const passportConfig = require('./passport');
+const passport = require('passport');
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
 // models
 const db = require('./models');
 // router
@@ -29,14 +35,33 @@ app.use(
   })
 );
 
+// 로그인 session / cookie
+passportConfig(); // 로그인, passport
+app.use(cookieParser(process.env.COOKIESCRET)); //* 프론트에서 cookie(랜덤한 문자열의 정보 key)를 가지고 있는다
+app.use(
+  session({
+    saveUninitialized: false,
+    resave: false,
+    secret: process.env.COOKIESCRET, // secret으로 데이터 복원 가능 때문에 보안을 위해 감춘다
+  })
+); //* server에서 통째로 들고있는 정보: session
+// passport.session() in index.js(passport)
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.get('/', (req, res) => {
   res.send('Wellcome, API Factory');
 });
 
+// json 형식으로 데이터를 전달 받기 위한 라이브러리
 app.use(bodyParser.json());
+// app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
 
+// router
 app.use('/user', userRouter);
 
+// 3065 port를 사용
 app.listen(3065, () => {
   console.log('app listening on port 3065');
 });
