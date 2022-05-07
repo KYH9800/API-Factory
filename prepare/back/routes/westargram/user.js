@@ -71,16 +71,35 @@ router.post('/logout', async (req, res, next) => {
   }
 });
 
+// POST /user/userIdName, 회원가입 사용자 아이디 중복확인
+router.post('/userIdName', async (req, res, next) => {
+  try {
+    const alreadyUserIdName = await User.findOne({
+      where: {
+        userIdName: req.body.userIdName,
+      },
+    });
+    if (alreadyUserIdName) {
+      res.status(403).send('이미 사용중인 아이디 입니다.');
+    }
+    res.status(200).send('사용 가능한 아이디 입니다.');
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+});
+
 // POST /user, 회원가입
 router.post('/', async (req, res, next) => {
   console.log('req.body.email', req.body.email);
   try {
-    const alreadyUserId = await User.findOne({
+    // 이메일 중복확인
+    const alreadyUserEmail = await User.findOne({
       where: {
         email: req.body.email,
       },
     });
-    if (alreadyUserId) {
+    if (alreadyUserEmail) {
       return res.status(403).send('이미 사용중인 계정입니다.');
     }
     // User table에 가입 정보 생성
