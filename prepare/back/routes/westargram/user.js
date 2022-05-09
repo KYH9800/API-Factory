@@ -2,7 +2,7 @@ const router = require('express').Router();
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 
-const { User } = require('../../models');
+const { User, Post } = require('../../models');
 
 // GET /user
 router.get('/', async (req, res, next) => {
@@ -14,6 +14,22 @@ router.get('/', async (req, res, next) => {
         attributes: {
           exclude: ['password'],
         },
+        include: [
+          {
+            model: Post,
+            attributes: ['id'],
+          },
+          {
+            model: User,
+            as: 'Followers',
+            attributes: ['id'],
+          },
+          {
+            model: User,
+            as: 'Followings',
+            attributes: ['id'],
+          },
+        ],
       });
       res.status(200).json(fullUserWithoutPassword);
     } else {
@@ -51,6 +67,19 @@ router.post('/login', (req, res, next) => {
         attributes: {
           exclude: ['password'], // 원하는 정보만 가져오거나 가져오지 않겠다 / 현재: pw 빼고 다 가져오겠다
         },
+        include: [
+          {
+            model: Post,
+          },
+          {
+            model: User,
+            as: 'Followers',
+          },
+          {
+            model: User,
+            as: 'Followings',
+          },
+        ],
       });
       // res.setHeader("cookie", "cxlhy"); // 내부적으로 랜덤한 문자열의 cookie를 프론트에 보내줌 (cookie / app.js의 cookieParser())
       return res.status(200).json(fullUserWithoutPassword);

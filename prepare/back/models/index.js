@@ -7,6 +7,8 @@ const sequelize = new Sequelize(config.database, config.username, config.passwor
 
 // model들을 등록, 함수 실행
 db.User = require('./westargram/user')(sequelize, Sequelize);
+db.Post = require('./westargram/post')(sequelize, Sequelize);
+db.Comment = require('./westargram/comment')(sequelize, Sequelize);
 
 // 반복문으로 돌면서 associate에서 관계들 연결해준다
 Object.keys(db).forEach((modelName) => {
