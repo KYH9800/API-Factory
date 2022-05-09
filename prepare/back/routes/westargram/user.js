@@ -102,6 +102,14 @@ router.post('/', async (req, res, next) => {
     if (alreadyUserEmail) {
       return res.status(403).send('이미 사용중인 계정입니다.');
     }
+    const alreadyUserIdName = await User.findOne({
+      where: {
+        userIdName: req.body.userIdName,
+      },
+    });
+    if (alreadyUserIdName) {
+      return res.status(403).send('아래의 기입된 정보를 확인하세요.');
+    }
     // User table에 가입 정보 생성
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     await User.create({
