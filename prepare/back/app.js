@@ -5,6 +5,7 @@ require('dotenv').config; // dotenv
 const cors = require('cors');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
+const path = require('path');
 // 로그인
 const passportConfig = require('./passport');
 const passport = require('passport');
@@ -14,6 +15,8 @@ const cookieParser = require('cookie-parser');
 const db = require('./models');
 // router
 const userRouter = require('./routes/westargram/user');
+const postRouter = require('./routes/westargram/post');
+const postsRouter = require('./routes/westargram/posts');
 
 // sequelize
 db.sequelize
@@ -48,6 +51,7 @@ app.use(
 // passport.session() in index.js(passport)
 app.use(passport.initialize());
 app.use(passport.session());
+app.use('/', express.static(path.join(__dirname, 'uploads'))); // ('/'): http://localhost:3065/
 
 app.get('/', (req, res) => {
   res.send('Wellcome, API Factory');
@@ -60,6 +64,8 @@ app.use(bodyParser.json());
 
 // router
 app.use('/user', userRouter);
+app.use('/post', postRouter);
+app.use('/posts', postsRouter);
 
 // 3065 port를 사용
 app.listen(3065, () => {

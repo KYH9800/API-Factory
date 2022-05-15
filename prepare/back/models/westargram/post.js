@@ -14,10 +14,14 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
   Post.associate = (db) => {
+    // hasMany
     db.Post.hasMany(db.Comment);
-    db.Post.belongsTo(db.User);
+    db.Post.hasMany(db.Image); // post.addImages, post.getImages
+    // belongsTo
+    db.Post.belongsTo(db.User); // db.Post.belongsTo(db.Post, { as: 'Retweet' });
+    // belongsToMany
     db.Post.belongsToMany(db.User, { through: 'Like', as: 'Likers' });
-    db.Post.belongsTo(db.Post, { as: 'Retweet' });
+    db.Post.belongsToMany(db.Hashtag, { through: 'PostHashtag' });
   };
   return Post;
 };

@@ -9,6 +9,8 @@ const sequelize = new Sequelize(config.database, config.username, config.passwor
 db.User = require('./westargram/user')(sequelize, Sequelize);
 db.Post = require('./westargram/post')(sequelize, Sequelize);
 db.Comment = require('./westargram/comment')(sequelize, Sequelize);
+db.Image = require('./westargram/image')(sequelize, Sequelize);
+db.Hashtag = require('./westargram/hashtag')(sequelize, Sequelize);
 
 // 반복문으로 돌면서 associate에서 관계들 연결해준다
 Object.keys(db).forEach((modelName) => {

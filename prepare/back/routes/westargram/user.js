@@ -2,7 +2,7 @@ const router = require('express').Router();
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 
-const { isLogedIn, isNotLogedIn } = require('./middlewares');
+const { isLoggedIn, isNotLoggedIn } = require('./middlewares');
 const { User, Post } = require('../../models');
 
 // GET /user
@@ -43,7 +43,7 @@ router.get('/', async (req, res, next) => {
 });
 
 // POST /user/login
-router.post('/login', isNotLogedIn, (req, res, next) => {
+router.post('/login', isNotLoggedIn, (req, res, next) => {
   // passport.authenticate('local', (serverErr, 성공객체, clientErr) => {...}
   passport.authenticate('local', (err, user, clientInfo) => {
     console.log('err:', err, 'user:', user, 'clientInfo:', clientInfo);
@@ -89,7 +89,7 @@ router.post('/login', isNotLogedIn, (req, res, next) => {
 });
 
 // POST /user/logout
-router.post('/logout', isLogedIn, async (req, res, next) => {
+router.post('/logout', isLoggedIn, async (req, res, next) => {
   try {
     // req.user: 로그인 된 user 정보
     req.logout();
@@ -102,7 +102,7 @@ router.post('/logout', isLogedIn, async (req, res, next) => {
 });
 
 // POST /user/userIdName, 회원가입 사용자 아이디 중복확인
-router.post('/userIdName', isNotLogedIn, async (req, res, next) => {
+router.post('/userIdName', isNotLoggedIn, async (req, res, next) => {
   try {
     const alreadyUserIdName = await User.findOne({
       where: {
@@ -120,7 +120,7 @@ router.post('/userIdName', isNotLogedIn, async (req, res, next) => {
 });
 
 // POST /user, 회원가입
-router.post('/', isNotLogedIn, async (req, res, next) => {
+router.post('/', isNotLoggedIn, async (req, res, next) => {
   console.log('req.body.email', req.body.email);
   try {
     // 이메일 중복확인

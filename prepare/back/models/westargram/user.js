@@ -21,6 +21,10 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         unique: true, // 고유한 값
       },
+      userImageSrc: {
+        type: DataTypes.STRING(200),
+        allowNull: true, // 필수
+      },
     },
     {
       charset: 'utf8',
