@@ -21,10 +21,6 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         unique: true, // 고유한 값
       },
-      userImageSrc: {
-        type: DataTypes.STRING(200),
-        allowNull: true, // 필수
-      },
     },
     {
       charset: 'utf8',
@@ -32,8 +28,13 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
   User.associate = (db) => {
+    // hasOne
+    db.User.hasOne(db.UserProfileImage);
+    db.User.hasOne(db.UserInfo);
+    // hasMany
     db.User.hasMany(db.Post); // 한 사람이 Post(게시글)를 여러개 가질 수 있다(작성자는 한명)
     db.User.hasMany(db.Comment); // 한 사람이 댓글을 여러개 쓸 수 있다(작성자는 한명)
+    // belongsToMany
     db.User.belongsToMany(db.Post, { through: 'Like', as: 'Liked' }); // 내가 좋아요를 누른 게시물
     db.User.belongsToMany(db.User, { through: 'Follow', as: 'Followers', foreignKey: 'FollowingId' });
     db.User.belongsToMany(db.User, { through: 'Follow', as: 'Followings', foreignKey: 'FollowerId' });

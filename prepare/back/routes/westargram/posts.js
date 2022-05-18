@@ -1,7 +1,7 @@
 const express = require('express');
 const { Op } = require('sequelize');
 
-const { Post, User, Image, Comment, Sequelize } = require('../../models');
+const { Post, User, Image, Comment, UserProfileImage, Sequelize } = require('../../models');
 
 const router = express.Router();
 
@@ -14,13 +14,22 @@ router.get('/', async (req, res, next) => {
       where.id = { [Op.lt]: parseInt(req.query.lastId, 10) }; // Op: Operator
     } // 초기 로딩이 아닐 때
     const posts = await Post.findAll({
-      where, // where: { id: lastId },
-      limit: 10, // 10개만 가져와라
-      order: [['createdAt', 'DESC']],
+      where, // where: { id: lastId }, 마지막 id를 기준으로 10개씩 최신 게시글 불러오기
+      limit: 10, // 10개만 가져와라 // offset
+      order: [['createdAt', 'DESC']], // DESC: 내림차순, 10 9 8 7 6 5 4 3 2 1
       include: [
         {
           model: User,
           attributes: ['id', 'userIdName'],
+        },
+        {
+          model: User,
+          include: [
+            {
+              model: UserProfileImage, // 댓글 작성자
+              attributes: ['id', 'src'],
+            },
+          ],
         },
         {
           model: Image,

@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 const passport = require('passport');
 
 const { isLoggedIn, isNotLoggedIn } = require('./middlewares');
-const { User, Post } = require('../../models');
+const { User, Post, UserInfo, UserProfileImage } = require('../../models');
 
 // GET /user
 router.get('/', async (req, res, next) => {
@@ -19,6 +19,14 @@ router.get('/', async (req, res, next) => {
           {
             model: Post,
             attributes: ['id'],
+          },
+          {
+            model: UserInfo,
+            attributes: ['id', 'userEmail', 'webSite', 'introduce', 'phoneNum'],
+          },
+          {
+            model: UserProfileImage,
+            attributes: ['id', 'src'],
           },
           {
             model: User,
@@ -41,6 +49,12 @@ router.get('/', async (req, res, next) => {
     next(err);
   }
 });
+
+// user 정보 변경, UserInfo 정보 추가 및 변경
+// PATCH /user/
+
+// 1. 입력되지 않은 정보는 유지하도록 한다.
+// 2. 각 카테고리 마다 라우터를 나눠야하나...?
 
 // POST /user/login
 router.post('/login', isNotLoggedIn, (req, res, next) => {

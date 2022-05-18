@@ -7,6 +7,8 @@ const sequelize = new Sequelize(config.database, config.username, config.passwor
 
 // model들을 등록, 함수 실행
 db.User = require('./westargram/user')(sequelize, Sequelize);
+db.UserInfo = require('./westargram/userInfo')(sequelize, Sequelize);
+db.UserProfileImage = require('./westargram/userProfileImage')(sequelize, Sequelize);
 db.Post = require('./westargram/post')(sequelize, Sequelize);
 db.Comment = require('./westargram/comment')(sequelize, Sequelize);
 db.Image = require('./westargram/image')(sequelize, Sequelize);

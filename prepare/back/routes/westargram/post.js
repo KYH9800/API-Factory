@@ -3,7 +3,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-const { Post, Comment, Image, User, Hashtag } = require('../../models');
+const { Post, Comment, Image, User, UserProfileImage, Hashtag } = require('../../models');
 const { isLoggedIn, isNotLoggedIn } = require('./middlewares');
 
 const router = express.Router();
@@ -64,21 +64,30 @@ router.post('/', isLoggedIn, upload.none(), async (req, res, next) => {
         },
         {
           model: User, // 게시글 작성자
-          attributes: ['id', 'userIdName', 'userImageSrc'],
+          attributes: ['id', 'userIdName'],
+        },
+        {
+          model: User,
+          include: [
+            {
+              model: UserProfileImage,
+              attributes: ['id', 'src'],
+            },
+          ],
         },
         {
           model: Comment,
           include: [
             {
               model: User, // 댓글 작성자
-              attributes: ['id', 'userIdName', 'userImageSrc'],
+              attributes: ['id', 'userIdName'],
             },
           ],
         },
         {
           model: User, // 좋아요 누른 사람
           as: 'Likers',
-          attributes: ['id', 'userIdName', 'userImageSrc'],
+          attributes: ['id', 'userIdName'],
         },
       ],
     });
