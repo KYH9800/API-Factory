@@ -22,7 +22,7 @@ router.get('/', async (req, res, next) => {
           },
           {
             model: UserInfo,
-            attributes: ['id', 'userEmail', 'webSite', 'introduce', 'phoneNum'],
+            attributes: ['id', 'userEmail', 'webSite', 'introduce', 'phoneNum', 'sex'],
           },
           {
             model: UserProfileImage,
@@ -55,6 +55,56 @@ router.get('/', async (req, res, next) => {
 
 // 1. 입력되지 않은 정보는 유지하도록 한다.
 // 2. 각 카테고리 마다 라우터를 나눠야하나...?
+router.patch('/userProfile', isLoggedIn, async (req, res, next) => {
+  try {
+    await User.update(
+      {
+        // todo: 받아온 정보
+        name: req.body.name,
+        userIdName: req.body.userIdName,
+      },
+      {
+        where: { id: req.user.id }, // 남의 것이 아닌 나의 id의(조건)
+      }
+    );
+    res.status(200).json({
+      name: req.body.name,
+      userIdName: req.body.userIdName,
+    });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+});
+
+router.patch('/userInfo', isLoggedIn, async (req, res, next) => {
+  try {
+    await UserInfo.update(
+      {
+        // todo: 받아온 정보
+        UserId: req.user.id,
+        userEmail: req.body.userEmail,
+        webSite: req.body.webSite,
+        introduce: req.body.introduce,
+        phoneNum: req.body.phoneNum,
+        sex: req.body.sex,
+      },
+      {
+        where: { id: req.user.id }, // 남의 것이 아닌 나의 id의(조건)
+      }
+    );
+    res.status(200).json({
+      userEmail: req.body.userEmail,
+      webSite: req.body.webSite,
+      introduce: req.body.introduce,
+      phoneNum: req.body.phoneNum,
+      sex: req.body.sex,
+    });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+});
 
 // POST /user/login
 router.post('/login', isNotLoggedIn, (req, res, next) => {

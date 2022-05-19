@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       webSite: {
         type: DataTypes.STRING(100),
-        allowNull: false, // 필수X
+        allowNull: false,
       },
       introduce: {
         type: DataTypes.TEXT,
@@ -30,7 +30,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
   UserInfo.associate = (db) => {
-    db.UserInfo.belongsTo(db.User); // 내가 좋아요를 누른 게시물
+    db.UserInfo.belongsTo(db.User);
   };
   return UserInfo;
 };
