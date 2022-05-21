@@ -104,6 +104,39 @@ router.post('/images', isLoggedIn, upload.array('image'), (req, res, next) => {
   res.json(req.files.map((v) => v.filename)); // 어디로 업로드 되었는지에 대한 파일명들을 프론트로 보내줌
 });
 
+// PATCH /post, 게시글 수정
+router.patch('/:postId', isLoggedIn, async (req, res, next) => {
+  // const hashtags = req.body.content.match(/#[^\s#]+/g); // 해쉬태그를 꺼내온다
+  try {
+    await Post.update(
+      {
+        content: req.body.content,
+      },
+      {
+        where: {
+          id: req.params.postId,
+          UserId: req.user.id, // 이렇게 하면 다른 사람이 못 지움(해당 작성자만 지울수 있음)
+        },
+      }
+    );
+    // const post = await Post.findOne({ where: { id: req.params.postId } });
+    // if (hashtags) {
+    //   const result = await Promise.all(
+    //     hashtags.map((tag) =>
+    //       Hashtag.findOrCreate({
+    //         where: { name: tag.slice(1).toLowerCase() },
+    //       })
+    //     )
+    //   ); // [노드, true][리액트, true]
+    //   await post.setHashtags(result.map((v) => v[0])); // setHashtags
+    // }
+    res.status(200).json({ PostId: parseInt(req.params.postId, 10), content: req.body.content });
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+});
+
 // DELETE /post, 게시글 삭제하기
 router.delete('/:postId', isLoggedIn, async (req, res, next) => {
   try {
