@@ -39,7 +39,6 @@ app.use(
 );
 
 // 로그인 session / cookie
-passportConfig(); // 로그인, passport
 app.use(cookieParser(process.env.COOKIESCRET)); //* 프론트에서 cookie(랜덤한 문자열의 정보 key)를 가지고 있는다
 app.use(
   session({
@@ -49,6 +48,7 @@ app.use(
   })
 ); //* server에서 통째로 들고있는 정보: session
 // passport.session() in index.js(passport)
+passportConfig(); // 로그인, passport
 app.use(passport.initialize());
 app.use(passport.session());
 app.use('/', express.static(path.join(__dirname, 'uploads'))); // ('/'): http://localhost:3065/

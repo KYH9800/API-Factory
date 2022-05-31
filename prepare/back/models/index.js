@@ -5,7 +5,8 @@ const db = {};
 
 const sequelize = new Sequelize(config.database, config.username, config.password, config);
 
-// model들을 등록, 함수 실행
+/* model들을 등록, 함수 실행 */
+// westargram
 db.User = require('./westargram/user')(sequelize, Sequelize);
 db.UserInfo = require('./westargram/userInfo')(sequelize, Sequelize);
 db.UserProfileImage = require('./westargram/userProfileImage')(sequelize, Sequelize);

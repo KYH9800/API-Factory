@@ -1,6 +1,8 @@
 const router = require('express').Router();
 const bcrypt = require('bcrypt');
 const passport = require('passport');
+// jwt
+const jwt = require('jsonwebtoken');
 
 const { isLoggedIn, isNotLoggedIn } = require('./middlewares');
 const { User, Post, UserInfo, UserProfileImage } = require('../../models');
@@ -109,47 +111,54 @@ router.patch('/userInfo', isLoggedIn, async (req, res, next) => {
 // POST /user/login
 router.post('/login', isNotLoggedIn, (req, res, next) => {
   // passport.authenticate('local', (serverErr, 성공객체, clientErr) => {...}
-  passport.authenticate('local', (err, user, clientInfo) => {
-    console.log('err:', err, 'user:', user, 'clientInfo:', clientInfo);
-    if (err) {
-      // 서버 에러가 생기면..
-      console.error(err);
-      next(err);
-    }
-    if (clientInfo) {
-      // client 에러가 생기면 알려준다. / '존재하지 않는 사용자 입니다.' / '비밀번호가 틀렸습니다.'
-      return res.status(401).send(clientInfo.reason);
-    }
-    // 서버와 클라이언트 에러가 없고 성공객체를 받아오면, user에 사용자 정보가 들어있다.
-    // req.login 통해 passport에서 로그인을 할 수 있게 해준다.
-    return req.login(user, async (loginErr) => {
-      if (loginErr) {
-        console.error(loginErr);
-        return next(loginErr);
+  passport.authenticate('jwt', { session: false }),
+    passport.authenticate('local', (err, user, clientInfo) => {
+      console.log('err:', err, 'user:', user, 'clientInfo:', clientInfo);
+      if (err) {
+        // 서버 에러가 생기면..
+        console.error(err);
+        next(err);
       }
-      const fullUserWithoutPassword = await User.findOne({
-        where: { id: user.id },
-        attributes: {
-          exclude: ['password'], // 원하는 정보만 가져오거나 가져오지 않겠다 / 현재: pw 빼고 다 가져오겠다
-        },
-        include: [
-          {
-            model: Post,
-          },
-          {
-            model: User,
-            as: 'Followers',
-          },
-          {
-            model: User,
-            as: 'Followings',
-          },
-        ],
+      if (clientInfo) {
+        // client 에러가 생기면 알려준다. / '존재하지 않는 사용자 입니다.' / '비밀번호가 틀렸습니다.'
+        return res.status(401).send(clientInfo.reason);
+      }
+      // 서버와 클라이언트 에러가 없고 성공객체를 받아오면, user에 사용자 정보가 들어있다.
+      // req.login 통해 passport에서 로그인을 할 수 있게 해준다.
+      return req.login(user, async (loginErr) => {
+        if (loginErr) {
+          console.error(loginErr);
+          return next(loginErr);
+        }
+        //! jwt 적용하기
+        const token = jwt.sign({ id: user.id, name: user.name, auth: user.auth }, 'jwt-secret-key');
+        if (token) {
+          const fullUserWithoutPassword = await User.findOne({
+            where: { id: user.id },
+            attributes: {
+              exclude: ['password'], // 원하는 정보만 가져오거나 가져오지 않겠다 / 현재: pw 빼고 다 가져오겠다
+            },
+            include: [
+              {
+                model: Post,
+              },
+              {
+                model: User,
+                as: 'Followers',
+              },
+              {
+                model: User,
+                as: 'Followings',
+              },
+            ],
+          });
+          // res.setHeader("cookie", "cxlhy"); // 내부적으로 랜덤한 문자열의 cookie를 프론트에 보내줌 (cookie / app.js의 cookieParser())
+          return res.status(200).json(fullUserWithoutPassword);
+        } else {
+          return res.status(403).send('JWT 인증에 문제가 있습니다.');
+        }
       });
-      // res.setHeader("cookie", "cxlhy"); // 내부적으로 랜덤한 문자열의 cookie를 프론트에 보내줌 (cookie / app.js의 cookieParser())
-      return res.status(200).json(fullUserWithoutPassword);
-    });
-  })(req, res, next);
+    })(req, res, next);
 });
 
 // POST /user/logout
